@@ -9,6 +9,7 @@ def main(args):
     # TODO: add ability to specify GPU number
     detector = Detector(port_number=args.port)
     sanitizer = IterativeSanitizer()
+    classifier = Classifier(port_number=args.port)
    
     while True:
         try:
@@ -21,6 +22,9 @@ def main(args):
                 print("\t\tSanitized input:\n\t\t" + sanitized_inp)
                 output = detector.forward([sanitized_inp])
             print(output)
+
+            classification = classifier.forward(inp)
+            print(classification)
         except EOFError:
             inp = ""
         except Exception as e:

@@ -8,12 +8,16 @@ def main(args):
     # Model
     # TODO: add ability to specify GPU number
     detector = Detector(port_number=args.port)
+    classifier = Classifier(port_number=args.port)
    
     while True:
         try:
             inp = input(f"Input a string to detect: ")
             output = detector.forward([inp])
             print(output)
+
+            classification = classifier.forward(inp)
+            print(classification)
         except EOFError:
             inp = ""
         if not inp:

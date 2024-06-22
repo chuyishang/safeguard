@@ -1,0 +1,8 @@
+README.md
+setup.py
+aihack/__init__.py
+aihack/existing_test.py
+aihack.egg-info/PKG-INFO
+aihack.egg-info/SOURCES.txt
+aihack.egg-info/dependency_links.txt
+aihack.egg-info/top_level.txt

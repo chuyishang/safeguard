@@ -30,9 +30,11 @@ classifier = pipeline(
 app = FastAPI()
 
 @app.post("/generate")
-async def embed(request: dict):
+async def generate(request: dict):
     input = request["text"]
+    print("INPUT:", input)
     result = classifier(input)
+    print("RESULT:", result)
     return JSONResponse(content={"text": input, "result": result})
 
 if __name__ == "__main__":

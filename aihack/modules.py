@@ -1,5 +1,6 @@
 import abc
 import openai
+import anthropic
 import torch
 import os
 import yaml
@@ -12,6 +13,8 @@ from utils import DotDict
 # Set up environment, api_keys
 load_dotenv()  # Load environment variables from a .env file
 oai_key = os.getenv('OPENAI_API_KEY')
+anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
@@ -83,7 +86,6 @@ class GPT(BaseModel):
 
         return response
 
-
 class Detector(BaseModel):
     name = 'Detector'
     requires_gpu = True
@@ -125,3 +127,47 @@ class Detector(BaseModel):
         # print("IMAGE_LIST_TYPE", type(image_list[0]))
         """Assumes that image_list and questions are same length"""
         return asyncio.run(self.run(self.url, inputs))
+    
+class IterativeSanitizer(BaseModel):
+    name = 'IterativeSanitizer'
+    to_batch = False
+    requires_gpu = False
+
+    def __init__(self, gpu_number=0):
+        super().__init__(gpu_number=gpu_number)
+
+        self.temperature = cfg.anthropic.temperature
+        self.model = cfg.anthropic.model
+        self.max_tries = cfg.anthropic.max_tries
+        self.max_tokens = cfg.anthropic.max_tokens
+
+    def call_llm(self, client, prompt):
+        for _ in range(self.max_tries):
+            try:
+                message = client.messages.create(
+                    model=self.model,
+                    system = "",
+                    messages=[
+                        {
+                            "role": "user", 
+                            "content": [{
+                                "type": "text",
+                                "text": prompt[0]
+                            }]
+                        }
+                    ],
+                    max_tokens=self.max_tokens,
+                    temperature=self.temperature
+                )
+                output_message = message.content[0].text
+                return output_message
+            except Exception as e:
+                print("Received exception: " + repr(e))
+                continue
+        return None
+
+    def forward(self, prompt):
+        client = anthropic.Anthropic()
+        response = self.call_llm(client, prompt)
+
+        return response

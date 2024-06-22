@@ -73,12 +73,7 @@ class GPT(BaseModel):
                 return output_message
 
             except Exception as e:
-                logger.error(f"ERROR: couldn't call GPT with: {e}")
-                logger.critical(f"trying again")
                 continue
-
-        logger.error("ERROR: could not get response from LLM")
-
         return None
 
     def forward(self, prompt):

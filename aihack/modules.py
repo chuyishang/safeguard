@@ -10,9 +10,6 @@ import aiohttp
 import requests
 import json
 
-API_KEY = "your_api_key_here"
-#API_URL = "https://api.anthropic.com/v1/messages"
-
 from dotenv import load_dotenv
 from utils import DotDict
 
@@ -173,7 +170,7 @@ class IterativeSanitizer(BaseModel):
         return None
 
     def forward(self, prompt):
-        client = anthropic.Anthropic()
+        client = anthropic.Anthropic(api_key=anthropic_key)
         response = self.call_llm(client, prompt)
 
         return response
@@ -189,7 +186,7 @@ class Classifier(BaseModel):
     async def run(prompt: str) -> dict:
         client = anthropic.Anthropic(
             # defaults to os.environ.get("ANTHROPIC_API_KEY")
-            api_key=API_KEY,
+            api_key=anthropic_key,
         )
 
         message = client.messages.create(

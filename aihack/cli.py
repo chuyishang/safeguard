@@ -1,7 +1,7 @@
 import argparse
 import torch
 
-from modules import Detector, IterativeSanitizer
+from modules import Detector, IterativeSanitizer, Classifier
 
 
 def main(args):

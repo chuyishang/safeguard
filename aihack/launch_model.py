@@ -1,33 +1,35 @@
-import requests
-import torch
 import argparse
-import torch
 import base64
 import io
-import pickle
 import os
-import uvicorn
+import pickle
 
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+import requests
+import torch
+import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
 
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"USING DEVICE: {DEVICE}")
 
-tokenizer = AutoTokenizer.from_pretrained("ProtectAI/deberta-v3-base-prompt-injection-v2")
-model = AutoModelForSequenceClassification.from_pretrained("ProtectAI/deberta-v3-base-prompt-injection-v2")
+tokenizer = AutoTokenizer.from_pretrained("xTRam1/safe-guard-classifier")
+model = AutoModelForSequenceClassification.from_pretrained(
+    "xTRam1/safe-guard-classifier"
+)
 
 classifier = pipeline(
-        "text-classification",
-        model=model,
-        tokenizer=tokenizer,
-        truncation=True,
-        max_length=512,
-        device=torch.device(DEVICE),
-    )
+    "text-classification",
+    model=model,
+    tokenizer=tokenizer,
+    truncation=True,
+    max_length=512,
+    device=torch.device(DEVICE),
+)
 
 app = FastAPI()
+
 
 @app.post("/generate")
 async def generate(request: dict):
@@ -36,6 +38,7 @@ async def generate(request: dict):
     result = classifier(input)
     print("RESULT:", result)
     return JSONResponse(content={"text": input, "result": result})
+
 
 if __name__ == "__main__":
     # print("here")

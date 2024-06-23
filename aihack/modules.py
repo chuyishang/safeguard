@@ -218,7 +218,7 @@ class Classifier(BaseModel):
                 }
             ]
         )
-        print(message.content[0].text)
+        return message.content[0].text
 
 
     def forward(self, inputs):

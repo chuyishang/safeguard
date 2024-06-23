@@ -14,36 +14,40 @@ class Guard():
             "class": [],
             "sanitized": [],
         }
-        responses = []
         if type(input) == str:
             input = [input]
-        
         vuln = self.detector.forward(input)
-        print(vuln)
+        v = vuln[0]
         # [0 1 1 1 0 0]
-        for v in vuln:
-            output["safe"].append(v)
-            if v == 0:
-                output["class"].append('')
-                output["sanitized"].append('')
-                # print("INPUT", input)
+        output["safe"].append(v == 0)
+        if v == 0:
+            output["class"].append('')
+            output["sanitized"].append('')
+            print("INPUT", input)
+            # TODO FIX FORWARD
+            print("FUNCTION", self.fn)
+            
+            if hasattr(self.fn, 'forward'):
+                response = self.fn.forward(input)
+            else:
+                response = "Function does not support forward method."
+            
+            response = self.fn.forward(input)
+            
+            print("RESPONSE", response)
+        else: # v == 1 -> unsafe case
+            if classifier:
+                classification = self.classifier.forward(input)
+                output["class"].append(classification)
+            if sanitizer:
+                sanitized = self.sanitizer.forward(input)
+                output["sanitized"].append(sanitized)
                 # TODO FIX FORWARD
-                resp = self.fn.forward(input)
-                # print("RESPONSE", resp)
-                responses.append(resp)
-            else: # v == 1 -> unsafe case
-                if classifier:
-                    classification = self.classifier.forward(input)
-                    output["class"].append(classification)
-                if sanitizer:
-                    sanitized = self.sanitizer.forward(input)
-                    output["sanitized"].append(sanitized)
-                    # TODO FIX FORWARD
-                    responses.append(self.fn.forward(sanitized))
-                if not sanitizer:
-                    responses.append("Sorry, this is detected as a dangerous input.")
+                response = self.fn.forward(sanitized)
+            if not sanitizer:
+                response = "Sorry, this is detected as a dangerous input."
 
-        return responses, output
+        return response, output
 
 """
 actual call:

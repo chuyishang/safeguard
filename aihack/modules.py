@@ -93,9 +93,10 @@ class Detector(BaseModel):
     name = 'Detector'
     requires_gpu = True
 
-    def __init__(self, gpu_number=None, port_number=8000):
+    def __init__(self, gpu_number=None, port_number=8000, binary=False):
         super().__init__(gpu_number)
         self.url = f"http://localhost:{port_number}/generate"
+        self.binary = binary
     
     @staticmethod
     async def send_request(url, data, delay=0):
@@ -129,7 +130,17 @@ class Detector(BaseModel):
     def forward(self, inputs):
         # print("IMAGE_LIST_TYPE", type(image_list[0]))
         """Assumes that image_list and questions are same length"""
-        return asyncio.run(self.run(self.url, inputs))
+        outputs = asyncio.run(self.run(self.url, inputs))
+        if self.binary:
+            binary_outputs = []
+            for out in outputs:
+                if out[1][0]['label'] == "INJECTION":
+                    binary_outputs.append(1)
+                else:
+                    binary_outputs.append(0)
+            return binary_outputs
+        else:
+            outputs
     
 class IterativeSanitizer(BaseModel):
     name = 'IterativeSanitizer'

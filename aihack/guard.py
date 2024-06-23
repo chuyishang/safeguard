@@ -14,7 +14,7 @@ class Guard():
             "class": [],
             "sanitized": [],
         }
-        response = []
+        responses = []
         if type(input) == str:
             input = [input]
         
@@ -26,10 +26,11 @@ class Guard():
             if v == 0:
                 output["class"].append('')
                 output["sanitized"].append('')
-                print("INPUT", input)
-                response = self.fn(input)
-                print("RESPONSE", response)
-                response.append(response)
+                # print("INPUT", input)
+                # TODO FIX FORWARD
+                resp = self.fn.forward(input)
+                # print("RESPONSE", resp)
+                responses.append(resp)
             else: # v == 1 -> unsafe case
                 if classifier:
                     classification = self.classifier.forward(input)
@@ -37,11 +38,12 @@ class Guard():
                 if sanitizer:
                     sanitized = self.sanitizer.forward(input)
                     output["sanitized"].append(sanitized)
-                    response.append(self.fn(sanitized))
+                    # TODO FIX FORWARD
+                    responses.append(self.fn.forward(sanitized))
                 if not sanitizer:
-                    response.append("Sorry, this is detected as a dangerous input.")
+                    responses.append("Sorry, this is detected as a dangerous input.")
 
-        return response, output
+        return responses, output
 
 """
 actual call:

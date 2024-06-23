@@ -177,10 +177,16 @@ class IterativeSanitizer(BaseModel):
 
 class Classifier(BaseModel):
     name = 'classifier'
+    to_batch = False
     requires_gpu = False
 
-    def __init__(self, gpu_number=None, port_number=8000):
-        super().__init__(gpu_number)
+    def __init__(self, gpu_number=0):
+        super().__init__(gpu_number=gpu_number)
+
+        self.temperature = cfg.anthropic.temperature
+        self.model = cfg.anthropic.model
+        self.max_tries = cfg.anthropic.max_tries
+        self.max_tokens = cfg.anthropic.max_tokens
 
     @staticmethod
     async def run(prompt: str) -> dict:

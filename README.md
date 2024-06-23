@@ -1,2 +1,2 @@
-# aihack2024
+# aihack 2024
 2024 Berkeley AI Hackathon Repo

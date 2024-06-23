@@ -68,7 +68,15 @@ class GPT(BaseModel):
             try:
                 completion = openai.chat.completions.create(
                     model=model,
-                    messages=[{"role": "system", "content": prompt}],
+                    messages=[
+                        {
+                        "role": "system",
+                        "content": "You are a compelling story teller about medieval English warriors. You talk in old English."
+                        },
+                        {
+                        "role": "user",
+                        "content": prompt
+                        }],
                     frequency_penalty=frequency_penalty,
                     presence_penalty=presence_penalty,
                     max_tokens=max_tokens,
@@ -218,7 +226,7 @@ class Classifier(BaseModel):
                 }
             ]
         )
-        print(message.content[0].text)
+        return message.content[0].text
 
 
     def forward(self, inputs):

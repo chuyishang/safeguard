@@ -3,7 +3,6 @@ from modules import *
 class Guard():
     def __init__(self, fn):
         self.fn = fn
-        print("FN", fn)
         self.detector = Detector(binary=True)
         self.sanitizer = IterativeSanitizer()
         self.classifier = Classifier()
@@ -23,13 +22,7 @@ class Guard():
         if v == 0:
             output["class"].append('')
             output["sanitized"].append('')
-            # print("input", inp[0])
-            # TODO FIX FORWARD
-            # print("FUNCTION", self.fn)
-            
             response = self.fn.forward(inp[0])
-            
-            # print("RESPONSE", response)
         else: # v == 1 -> unsafe case
             if classifier:
                 classification = self.classifier.forward(inp)
@@ -37,10 +30,9 @@ class Guard():
             if sanitizer:
                 sanitized = self.sanitizer.forward(inp)
                 output["sanitized"].append(sanitized)
-                # TODO FIX FORWARD
                 response = self.fn.forward(sanitized)
             if not sanitizer:
-                response = "Sorry, this is detected as a dangerous inp."
+                response = "Sorry, this is detected as a dangerous input."
 
         return response, output
 

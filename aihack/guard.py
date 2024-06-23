@@ -8,44 +8,39 @@ class Guard():
         self.sanitizer = IterativeSanitizer()
         self.classifier = Classifier()
     
-    def __call__(self, input, classifier=False, sanitizer=False):
+    def __call__(self, inp, classifier=False, sanitizer=False):
         output = {
             "safe": [],
             "class": [],
             "sanitized": [],
         }
-        if type(input) == str:
-            input = [input]
-        vuln = self.detector.forward(input)
+        if type(inp) == str:
+            inp = [inp]
+        vuln = self.detector.forward(inp)
         v = vuln[0]
         # [0 1 1 1 0 0]
         output["safe"].append(v == 0)
         if v == 0:
             output["class"].append('')
             output["sanitized"].append('')
-            print("INPUT", input)
+            # print("input", inp[0])
             # TODO FIX FORWARD
-            print("FUNCTION", self.fn)
+            # print("FUNCTION", self.fn)
             
-            if hasattr(self.fn, 'forward'):
-                response = self.fn.forward(input)
-            else:
-                response = "Function does not support forward method."
+            response = self.fn.forward(inp[0])
             
-            response = self.fn.forward(input)
-            
-            print("RESPONSE", response)
+            # print("RESPONSE", response)
         else: # v == 1 -> unsafe case
             if classifier:
-                classification = self.classifier.forward(input)
+                classification = self.classifier.forward(inp)
                 output["class"].append(classification)
             if sanitizer:
-                sanitized = self.sanitizer.forward(input)
+                sanitized = self.sanitizer.forward(inp)
                 output["sanitized"].append(sanitized)
                 # TODO FIX FORWARD
                 response = self.fn.forward(sanitized)
             if not sanitizer:
-                response = "Sorry, this is detected as a dangerous input."
+                response = "Sorry, this is detected as a dangerous inp."
 
         return response, output
 
@@ -53,7 +48,7 @@ class Guard():
 actual call:
 
 gpt = GPT()
-out = gpt(input)
+out = gpt(inp)
 
 llm = Guard(llm)
 

@@ -17,14 +17,19 @@ def main(args):
             output = detector.forward([inp])
             if output[0][1][0]['label'] == 'INJECTION' and args.enable_sanitizer:
                 print("\tDetected prompt injection:")
-                print("\t\tOriginal input:\n\t\t" + inp)
-                sanitized_inp = sanitizer.forward([inp])
-                print("\t\tSanitized input:\n\t\t" + sanitized_inp)
-                output = detector.forward([sanitized_inp])
-            print(output)
-
+                sanitized_inp = inp
+                for _ in range(5):
+                    print("\t\tOriginal input:\n\t\t" + sanitized_inp)
+                    sanitized_inp = sanitizer.forward([sanitized_inp])
+                    print("\t\tSanitized input:\n\t\t" + sanitized_inp + "\n")
+                    output = detector.forward([sanitized_inp])
+                    if output[0][1][0]['label'] != 'INJECTION':
+                        break
+            
             classification = classifier.forward(inp)
             print(classification)
+
+            print(output)
         except EOFError:
             inp = ""
         except Exception as e:

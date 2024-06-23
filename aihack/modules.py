@@ -201,10 +201,7 @@ class Classifier(BaseModel):
 
     @staticmethod
     async def run(prompt: str) -> dict:
-        client = anthropic.Anthropic(
-            # defaults to os.environ.get("ANTHROPIC_API_KEY")
-            api_key=anthropic_key,
-        )
+        client = anthropic.Anthropic(api_key=anthropic_key)
 
         message = client.messages.create(
             model="claude-3-5-sonnet-20240620",

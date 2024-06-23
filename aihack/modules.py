@@ -74,15 +74,15 @@ class GPT(BaseModel):
                     max_tokens=max_tokens,
                     n=n,
                     temperature=temperature)
-
                 output_message = completion.choices[0].message.content
                 return output_message
-
             except Exception as e:
+                print(e)
                 continue
         return None
 
     def forward(self, prompt):
+        # print("PROMPT", prompt)
         response = GPT.call_llm(prompt, self.model, self.frequency_penalty,
                                  self.presence_penalty, self.max_tokens, self.n_votes,
                                  self.temperature, self.max_tries)

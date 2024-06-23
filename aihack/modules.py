@@ -140,7 +140,7 @@ class Detector(BaseModel):
                     binary_outputs.append(0)
             return binary_outputs
         else:
-            outputs
+            return outputs
     
 class IterativeSanitizer(BaseModel):
     name = 'IterativeSanitizer'

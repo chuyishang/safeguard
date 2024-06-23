@@ -9,7 +9,7 @@ def main(args):
     # TODO: add ability to specify GPU number
     detector = Detector(port_number=args.port)
     sanitizer = IterativeSanitizer()
-    classifier = Classifier(port_number=args.port)
+    classifier = Classifier()
    
     while True:
         try:

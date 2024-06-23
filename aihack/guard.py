@@ -20,8 +20,8 @@ class Guard():
         # [0 1 1 1 0 0]
         output["safe"].append(v == 0)
         if v == 0:
-            output["class"].append('')
-            output["sanitized"].append('')
+            output["class"].append('safe input (no classification)')
+            output["sanitized"].append('safe input (no sanitization)')
             response = self.fn.forward(inp[0])
         else: # v == 1 -> unsafe case
             if classifier:

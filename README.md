@@ -27,11 +27,13 @@ A custom trained, lightweight detection model that achieves a new state of the a
 An optional prompt Sanitizer that iterative sanitizes the dangerous prompt until it is deemed safe. SafeGuard is packaged as an easy-to-use Python package that can be deployed on top of any LLM. Deploying SafeGuard is as simple as editing 3 lines of code to wrap any LLM call:
 from guard import Guard
 
+```
 llm = LLM() # original LLM call
 safe_llm = Guard(llm) # safe LLM call
 
 output = llm(prompt) # original LLM call
 safe_output = safe_llm(prompt) # safe LLM call
+```
 # How we built it
 ## Detector
 We formulated the prompt injection detector problem as a classification problem and trained our own language model to detect whether a given user prompt is an attack or safe. First, to train our own prompt injection detector, we required high-quality labelled data; however, existing prompt injection datasets were either too small (on the magnitude of O(100)) or didn’t cover a broad spectrum of prompt injection attacks. To this end, inspired by the GLAN paper, we created a custom synthetic prompt injection dataset using a categorical tree structure and generated 3000 distinct attacks. We started by curating our seed data using open-source datasets (vmware/open-instruct, huggingfaceh4/helpful-instructions, Fka-awesome-chatgpt-prompts, jackhhao/jailbreak-classification). Then we identified various prompt objection categories (context manipulation, social engineering, ignore prompt, fake completion…) and prompted GPT-3.5-turbo in a categorical tree structure to generate prompt injection attacks for every category. Our final custom dataset consisted of 7000 positive/safe prompts and 3000 injection prompts. We also curated a test set of size 600 prompts following the same approach. Using our custom dataset, we fine-tuned DeBERTa-v3-small from scratch. Specifically, we attached a classification head that would project the [CLS] token to a 2-dimensional vector representing the class probabilities for “jailbreak” and “safe” and used a supervised fine-tuning objective. We compared our model’s performance to the best-performing prompt injection classifier from ProtecAI and observed a 4.9% accuracy increase on our held-out test data. Specifically, our custom model achieved an accuracy of 99.6%, compared to the 94.7% accuracy of ProtecAI’s model, all the while being 2X smaller (44M (ours) vs. 86M (theirs)).
